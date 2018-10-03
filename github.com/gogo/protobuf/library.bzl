@@ -6,23 +6,25 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 def gogo_proto_library(**kwargs):
     name = kwargs.get("name")
-    deps = kwargs.get("deps")
+    proto_deps = kwargs.pop("srcs")
+    go_deps = kwargs.pop("deps", [])
     visibility = kwargs.get("visibility")
 
     name_pb = name + "_pb"
 
     gogo_proto_compile(
         name = name_pb,
-        deps = deps,
+        deps = proto_deps,
         visibility = visibility,
     )
 
-    kwargs["deps"] = [
+    go_deps.append(
         "@com_github_gogo_protobuf//proto:go_default_library",
-    ]
+    )
 
     go_library(
         srcs = [name_pb],
+        deps = go_deps,
         **kwargs
     )
 
